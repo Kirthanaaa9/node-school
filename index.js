@@ -1,19 +1,20 @@
 const express = require('express');
 const mysql = require('mysql2');
 const app = express();
+require('dotenv').config(); // Load environment variables
 
-// Middleware to parse JSON requests
 app.use(express.json());
 
-// Create a connection to the database using environment variables
+// Database connection
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
+    port: process.env.DB_PORT,         // Add port from environment variables
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
+    database: process.env.DB_NAME,
+    // ssl: { rejectUnauthorized: false } // Uncomment if SSL is needed
 });
 
-// Connect to the database
 db.connect((err) => {
     if (err) {
         console.error('Database connection failed:', err);
@@ -22,12 +23,14 @@ db.connect((err) => {
     console.log('Database connected');
 });
 
-// Start the server
-app.listen(3000, () => {
-    console.log('Server started on port 3000');
+// Server port
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}`);
 });
 
-// Endpoint to add a school
+// Add a school
 app.post('/addSchool', (req, res) => {
     const { name, address, latitude, longitude } = req.body;
     if (!name || !address || !latitude || !longitude) {
@@ -46,7 +49,7 @@ app.post('/addSchool', (req, res) => {
     });
 });
 
-// Endpoint to get schools within a certain distance
+// Get schools within 50 km
 app.get('/school', (req, res) => {
     const { latitude, longitude } = req.query;
     if (!latitude || !longitude) {
