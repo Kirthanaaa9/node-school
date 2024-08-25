@@ -1,18 +1,14 @@
 const express = require('express');
 const mysql = require('mysql2');
 const app = express();
-require('dotenv').config(); // Load environment variables
 
 app.use(express.json());
 
-// Database connection
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
-    port: process.env.DB_PORT,         // Add port from environment variables
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    // ssl: { rejectUnauthorized: false } // Uncomment if SSL is needed
+    database: process.env.DB_NAME
 });
 
 db.connect((err) => {
@@ -23,14 +19,10 @@ db.connect((err) => {
     console.log('Database connected');
 });
 
-// Server port
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-    console.log(`Server started on port ${PORT}`);
+app.listen(3000, () => {
+    console.log('Server started on port 3000');
 });
 
-// Add a school
 app.post('/addSchool', (req, res) => {
     const { name, address, latitude, longitude } = req.body;
     if (!name || !address || !latitude || !longitude) {
@@ -49,7 +41,6 @@ app.post('/addSchool', (req, res) => {
     });
 });
 
-// Get schools within 50 km
 app.get('/school', (req, res) => {
     const { latitude, longitude } = req.query;
     if (!latitude || !longitude) {
