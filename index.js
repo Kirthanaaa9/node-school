@@ -4,11 +4,14 @@ const app = express();
 
 app.use(express.json());
 
+// Database connection
 const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
+    host: 'mysql-1e7793b5-kirthanaaa9-bd10.h.aivencloud.com',
+    port: 13415,                // Port from your database configuration
+    user: 'avnadmin',
+    password: 'AVNS_1VB9c3tVo5AWWhW3Ccv',
+    database: 'defaultdb',
+    // ssl: { rejectUnauthorized: false } // Uncomment if SSL is needed
 });
 
 db.connect((err) => {
@@ -19,10 +22,14 @@ db.connect((err) => {
     console.log('Database connected');
 });
 
-app.listen(3000, () => {
-    console.log('Server started on port 3000');
+// Server port
+const PORT = process.env.PORT || 3000; // Default port for Express server
+
+app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}`);
 });
 
+// Add a school
 app.post('/addSchool', (req, res) => {
     const { name, address, latitude, longitude } = req.body;
     if (!name || !address || !latitude || !longitude) {
@@ -41,6 +48,7 @@ app.post('/addSchool', (req, res) => {
     });
 });
 
+// Get schools within 50 km
 app.get('/school', (req, res) => {
     const { latitude, longitude } = req.query;
     if (!latitude || !longitude) {
